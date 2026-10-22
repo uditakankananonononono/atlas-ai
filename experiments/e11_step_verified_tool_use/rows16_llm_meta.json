@@ -1,0 +1,21 @@
+{
+  "probe": "rev16 two-lever sweep (pre-registered, prereg commit 91c32ddd pinned before any run; parent-acked 2026-10-22 05:03 with additions)",
+  "model": "Qwen2.5-1.5B-Instruct",
+  "gguf_file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "gguf_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+  "gguf_source": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "runtime": "llama.cpp llama-server, build b11796 (llama-b11796-bin-ubuntu-x64.tar.gz)",
+  "runtime_tarball_sha256": "70b856d40577f1cf66120f894b2674398175efbae7d9153566872c4b3c1b3d32",
+  "runtime_source": "https://github.com/ggml-org/llama.cpp/releases/tag/b11796",
+  "generation": {"temperature": 0.0, "seed": 20261021, "max_tokens": 48},
+  "server": {"ctx": 1024, "threads": 2, "port": 8137},
+  "tasks": "tasks.HELD_OUT[30:60] (int held-out, families A/B/C; ids H30-H59 - FRESH slice, not used in rev13)",
+  "seed": 0,
+  "conditions": ["llm-ver", "llm-ver-none", "llm-ver-guard", "llm-ver-none-guard"],
+  "condition_notes": "C0 llm-ver runs run._run_verified byte-identical (control); A1 llm-ver-none adds prompt-level EXPECT:none discipline (loop unchanged); A2 llm-ver-guard runs llm_sweep._run_verified_guard (repeat-guard); A3 llm-ver-none-guard combined",
+  "checkpointing": "rows appended per run; rows16_llm_done.txt manifests completed task|condition pairs for resume",
+  "harness_limits": "prompt shows last 6 history records; llm_sweep wraps world.execute to convert non-WorldError exceptions into WorldError (real-API 400 semantics), loops unchanged",
+  "preregistered": "question: can two levers convert rev13's contract catches into progress on tasks the 1.5B model could not finish; endpoints success / wasted catches / blocked / parse failures; success bar: A3 beats C0 success paired at n=30 AND guard arms strictly lower total wasted catches vs C0; falsifier: no lever arm beats C0 success AND neither guard arm lowers wasted catches; if C0 finishes 0 tasks the success comparison is vacuous and the paired wasted-catch comparison carries the falsifier alone",
+  "pilot_disclosure": "two smoke pilots (05:05-05:19 2-task x 4-condition; 12:20-12:34 2-task x 4-condition after the rev15b rebuild) validated mechanics; their rows were CLEARED before the full sweep and are part of no number (pilot logs preserved at /home/sandbox/llm/rows16-pilot.log)",
+  "run_window": "full sweep launched 2026-10-22 12:34 IST, completed 14:22 IST (120 runs; wall time includes sandbox suspensions)"
+}

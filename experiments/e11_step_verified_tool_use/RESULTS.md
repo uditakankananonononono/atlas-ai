@@ -103,6 +103,121 @@ the 2-repair budget.
 Remaining: real tasks + real model; replication of the closest
 prior art (StepTool) before any novelty claim - none is made here.
 
+## rev16: two-lever sweep on the fresh slice H30-H59 - levers cut wasted catches 94-99% (per task), success still 0/30
+
+VERDICT (pre-registered endpoints, prereg commit 91c32ddd pinned
+before any run, parent-acked 2026-10-22 05:03 with additions): the
+SUCCESS BAR IS NOT MET - A3 did not beat C0 success (0/30 vs 0/30; C0
+finished zero tasks, so the success comparison is vacuous exactly as
+the prereg pre-declared).  The FALSIFIER DOES NOT FIRE - its
+wasted-catch arm carries it and BOTH guard arms strictly lowered total
+wasted catches vs C0 (per task: A2 8 vs 144, A3 2 vs 144; strict: 7 and 0 vs 113).  Headline: on a
+fresh task slice the two levers transfer - they convert rev13's
+repeated contract catches into free guard blocks and near-zero waste -
+but at Qwen2.5-1.5B nothing converts into task finishes; the rev13
+capability-floor finding on the contract arm replicates on H30-H59.
+
+Naming: pre-registered under the name "rev15"; renamed rev16 after
+the wipe-recovery ship took rev15 (parent 12:26 ack).
+
+Setup (pins identical to rev13): Qwen2.5-1.5B-Instruct Q4_K_M (GGUF
+sha256 6a1a2eb6...), llama.cpp b11796, temp 0, seed 20261021,
+max_tokens 48, ctx 1024, 2 threads, free CPU only; n=30 int held-out
+tasks (HELD_OUT[30:60], ids H30-H59 - FRESH, not used in rev13) x 1
+seed x 4 conditions; rows16_llm_*.jsonl (2655 logged generations),
+done manifest, meta json, run-recorded driver log committed as
+rows16_llm_runlog.txt.  Arms: C0 llm-ver (run._run_verified
+byte-identical control), A1 llm-ver-none (prompt EXPECT:none
+discipline for unpredictable observations; loop unchanged), A2
+llm-ver-guard (repeat-guard: a call whose (tool, canonical args) was
+already caught twice by the contract is blocked pre-execution, free,
+repair-budget consuming, forced Violation('repeat_guard')), A3
+llm-ver-none-guard (combined).  Pilot disclosure: two smoke pilots
+(05:05-05:19 and 12:20-12:34, 2 tasks x 4 conditions each) validated
+mechanics; their rows were CLEARED before the full sweep and are part
+of no number.  Sweep window 12:34-14:22 IST (120 runs).
+
+RESULTS (n=30 per condition; success/blocked/parse_failures
+RUN-RECORDED in rows16_llm_runlog.txt; misses/blocked/parse_failures/
+wasted/steps/exhaustion ROW-RECOMPUTED and asserted by
+analysis_rev16.py, output committed as analysis_rev16.txt):
+
+  condition          success  blocked  misses  wasted  wasted-strict  parse_fail
+  C0 llm-ver         0/30     7        181     144     113            1
+  A1 llm-ver-none    0/30     13       9       5       0              2
+  A2 llm-ver-guard   0/30     49       43      8       7              1
+  A3 llm-ver-none-g  0/30     16       6       2       0              2
+
+  (wasted = catches that are immediate repetitions of an
+  already-caught identical call WITHIN ONE TASK, the pre-registered
+  endpoint; wasted-strict = consecutive ACCEPTED steps both caught,
+  same call.  A2's 49 blocks = 42 guard blocks + 7 pre-gate; A3's 16
+  = 3 + 13.  rev16b correction (A55 first audit): the rev16 ship
+  concatenated misses across all 30 tasks before counting adjacent
+  repeats, so 13 of C0's and 13 of A2's published numbers (157 and
+  21) were cross-task artefacts; per task they are 144 and 8.  A55's
+  independent recount script (e16chk.py) and this lane's
+  analysis_rev16.py agree on every number on both definitions.)
+
+Findings:
+1. Lever (i) is the big effect: EXPECT:none discipline cut contract
+   catches 181 -> 9 (95%) - direct confirmation of rev14's
+   contract-design observation that `list` was an unfair prediction
+   contract (the model cannot know generated filenames).  The
+   remaining 9 are genuine wrong-value predictions.
+2. Lever (ii) works as designed: the repeat-guard fired 42 guard
+   blocks - free pre-execution blocks of already-twice-caught calls
+   (as a count of prevented repetitions this is an UPPER BOUND: a
+   blocked call might not have repeated again - A59, rev16d).  A2:
+   misses 43, of which 8 wasted per task, 7 strict, vs C0's
+   144 / 113; combined (A3) is the floor: 6 misses, 2 wasted,
+   3 guard blocks.
+3. Paired per-task (pre-declared comparison): A2 fewer misses than C0
+   on 13/30 tasks, more on 0; A1 fewer on 21/30, more on 1 (H31);
+   A3 fewer on 21/30, more on 1 (H31).  Paired per-task wasted
+   (A59, rev16d): A2 lower on 13/30 tasks, equal 17, higher 0; A1
+   and A3 lower on 13/30, equal 16, HIGHER on 1 (H51: C0 wasted 0,
+   arm wasted 1 - the same caught call repeated twice).  The 13/0
+   pattern holds for A2 only.
+3b. Early termination (A55 finding, rev16b; A59 label fix, rev16c):
+   the guard's blocks consume the per-step repair budget, so 15/30
+   A2 runs ended EARLY on REPAIR-BUDGET exhaustion - repair
+   exhaustion only, i.e. runs ending below the 25-step cap (A2
+   accepted steps 467 vs C0 731; A3 4/30 early, 681 steps; A1 3/30,
+   691; C0 1/30, 731).  The production `exhausted` flag also fires
+   at the 25-step cap itself and is true for 30/30 runs in every
+   arm; the counts here are repair exhaustion only.  Part of A2's
+   catch reduction is runs stopping sooner, not only adaptation -
+   A2's per-task wasted (8) is measured on truncated trajectories.
+   A1/A3's reductions are not early-stop effects (3-4 early runs,
+   near-full step counts).
+4. The C-family pathology reproduces on the fresh slice under C0:
+   the same 22-catch 18-19x terminal chains on 5 C tasks (H32, H41,
+   H47, H50, H59; C0 chains {1:41,2:8,3:4,4:5,18:3,19:2}, chain ends
+   39 adapted / 23 corrected / 1 terminal).  Under A3 those 5 tasks
+   drop to 0-2 misses each.
+5. Registered tradeoff (prereg): the guard cannot distinguish a
+   repeat carrying a CORRECTED contract; C0 had 23 such corrected
+   chain ends that the guard arms forgo - the known cost, visible in
+   A2's remaining 43 catches and 42 guard blocks.
+6. No finishes anywhere: every arm 0/30, silent_fail 0; verified
+   runs still die at MAX_STEPS.  The levers fix the waste the
+   contract surfaces; they do not supply the planning capability the
+   1.5B lacks.  A model above the finish threshold remains the
+   deciding experiment (rev13 section, unchanged).
+7. Stated limits (rev16b, A55): the four arms were not necessarily
+   run within one llama-server lifetime - the rev15 cross-lifetime
+   nondeterminism limit applies to every arm-to-arm comparison.  A1's
+   catch drop is a PROMPT effect: the discipline tells the model to
+   write EXPECT: none when it cannot predict the observation, so it
+   makes fewer checkable predictions and the contract has fewer
+   chances to fire - not direct evidence of better calls.
+
+Tests: 55/55 on Python 3.10.12 and 3.12.15 (normal and -W error):
+TestResultsDocIntact extended to require this heading; new offline
+test pinning analysis_rev16.compute() to the registered per-arm
+totals.
+
 ## rev15: wipe recovery - cumulative patch rebuilt on RERUN data (changed numbers table)
 
 What happened: on 2026-10-22 ~09:05 IST both this lane's workspace and

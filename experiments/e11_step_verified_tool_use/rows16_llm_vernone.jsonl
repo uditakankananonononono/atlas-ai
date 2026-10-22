@@ -1,0 +1,704 @@
+{"args": {"path": "data0.txt,data1.txt,data2.txt,data3.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt,data3.txt\"\nEXPECT: none", "step": 0, "task": "H30", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none", "step": 1, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 4, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 5, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 6, "task": "H30", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 7, "task": "H30", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 8, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 9, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 10, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 11, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 12, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 13, "task": "H30", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 14, "task": "H30", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 15, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 16, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 17, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 18, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 19, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 20, "task": "H30", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 21, "task": "H30", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 22, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 23, "task": "H30", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-138'", "step": 24, "task": "H30", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H31", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H31", "tool": "read"}
+{"args": {"path": "y.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"y.txt\"}\nEXPECT: none", "step": 2, "task": "H31", "tool": "read"}
+{"args": {"a": "83", "b": "-87"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: add a=83 b=-87\nEXPECT: observation = -14", "step": 3, "task": "H31", "tool": "add"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 4, "task": "H31", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 5, "task": "H31", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 6, "task": "H31", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 7, "task": "H31", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H32", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none", "step": 1, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 2, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 4, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 5, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 6, "task": "H32", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": [\"data0.txt\", \"data1.txt\", \"data2.txt\"]}\nEXPECT: none", "step": 7, "task": "H32", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H32", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 12, "task": "H32", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 13, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H32", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 17, "task": "H32", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 18, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H32", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 22, "task": "H32", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 197", "step": 23, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H32", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H33", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none\nTOOL: read path=data2.txt\nEXPECT: none", "step": 1, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H33", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data1.txt\"}\nEXPECT: none", "step": 3, "task": "H33", "tool": "read"}
+{"args": {"path": "data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data2.txt\"}\nEXPECT: none", "step": 4, "task": "H33", "tool": "read"}
+{"args": {"a": "142", "b": "-156"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: add a=142 b=-156\nEXPECT: observation = -24", "step": 5, "task": "H33", "tool": "add"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 6, "task": "H33", "tool": "list"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 7, "task": "H33", "tool": "list"}
+{"args": {"a": "142", "b": "-156"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: add a=\"142\" b=\"-156\"\nEXPECT: observation = -14", "step": 8, "task": "H33", "tool": "add"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none", "step": 12, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none", "step": 13, "task": "H33", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 14, "task": "H33", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H33", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 18, "task": "H33", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H33", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H33", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-29'", "step": 2, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 3, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 4, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-29'", "step": 5, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-29'", "step": 6, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 7, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 8, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 9, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 10, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 11, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 12, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 13, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 14, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 15, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 16, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 17, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 18, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 19, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 20, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 21, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 22, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 23, "task": "H34", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-29'", "step": 24, "task": "H34", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt\", path=\"data1.txt\"\nEXPECT: none", "step": 0, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 1, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H35", "tool": "list"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H36", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none\nTOOL: read path=data2.txt\nEXPECT: none", "step": 1, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 5, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 6, "task": "H36", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 7, "task": "H36", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 8, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 9, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 10, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 11, "task": "H36", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 12, "task": "H36", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 13, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 14, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 15, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 16, "task": "H36", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 17, "task": "H36", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 18, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 19, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 20, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 21, "task": "H36", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 22, "task": "H36", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 23, "task": "H36", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-94'", "step": 24, "task": "H36", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 2, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-53'", "step": 3, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 4, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 5, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 6, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 7, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 8, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 9, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 10, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 11, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 12, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 13, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 14, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 15, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 16, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 17, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 18, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 19, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 20, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 21, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 22, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 23, "task": "H37", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-53'", "step": 24, "task": "H37", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt\", path=\"data1.txt\"\nEXPECT: none", "step": 0, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 1, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H38", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=data0.txt data1.txt data2.txt data3.txt data4.txt\nEXPECT: none", "step": 0, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data1.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data2.txt\"}\nEXPECT: none\n", "step": 1, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H39", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H39", "tool": "list"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 2, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 3, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 4, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 5, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 6, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 7, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 8, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 9, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 10, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 11, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 12, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 13, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 14, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 15, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 16, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 17, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 18, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 19, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 20, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 21, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 22, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 23, "task": "H40", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-32'", "step": 24, "task": "H40", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H41", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none", "step": 1, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 2, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 3, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 4, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 5, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 6, "task": "H41", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 7, "task": "H41", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '152'", "step": 8, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '152'", "step": 9, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '152'", "step": 11, "task": "H41", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 12, "task": "H41", "tool": "list"}
+{"condition": "llm-ver-none", "family": "C", "parse_error": "no TOOL line", "raw": "list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"} -> ['data0.txt', 'data0_1.txt', 'data0_2.txt', 'data1.txt', 'data", "step": 13, "task": "H41"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 14, "task": "H41", "tool": "list"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 15, "task": "H41", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '152'", "step": 16, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 17, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 152", "step": 19, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '152'", "step": 20, "task": "H41", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 21, "task": "H41", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 25, "task": "H41", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=data0.txt data1.txt data2.txt data3.txt data4.txt\nEXPECT: none", "step": 0, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data1.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data2.txt\"}\nEXPECT: none\n", "step": 1, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H42", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H42", "tool": "list"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 2, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 3, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 4, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 5, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 6, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 7, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 8, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 9, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 10, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 11, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 12, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 13, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 14, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 15, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 16, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 17, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 18, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 19, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 20, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 21, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 22, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 23, "task": "H43", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 24, "task": "H43", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt\", path=\"data1.txt\"\nEXPECT: none", "step": 0, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 1, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H44", "tool": "list"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt,data3.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt,data3.txt\"\nEXPECT: none", "step": 0, "task": "H45", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none", "step": 1, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 3, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 4, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 5, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 6, "task": "H45", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 7, "task": "H45", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 8, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 9, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 10, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 11, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 12, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 13, "task": "H45", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 14, "task": "H45", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 15, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 16, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 17, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 18, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 19, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 20, "task": "H45", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 21, "task": "H45", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 22, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 23, "task": "H45", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-57'", "step": 24, "task": "H45", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H46", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H46", "tool": "read"}
+{"args": {"path": "y.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"y.txt\"}\nEXPECT: none", "step": 2, "task": "H46", "tool": "read"}
+{"args": {"a": "48", "b": "-92"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: add a=48 b=-92\nEXPECT: observation = -44", "step": 3, "task": "H46", "tool": "add"}
+{"args": {}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: add {\"a\": \"48\", \"b\": \"-92\"}}\nEXPECT: none", "step": 4, "task": "H46", "tool": "add"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 5, "task": "H46", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 6, "task": "H46", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 7, "task": "H46", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 8, "task": "H46", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none", "step": 1, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 2, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 3, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 4, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 5, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 9, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 10, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 14, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 15, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 19, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 104", "step": 20, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H47", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt,data1.txt,data2.txt\"}\nEXPECT: none", "step": 24, "task": "H47", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=data0.txt data1.txt data2.txt data3.txt data4.txt\nEXPECT: none", "step": 0, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data1.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data2.txt\"}\nEXPECT: none\n", "step": 1, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H48", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H48", "tool": "list"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 2, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 3, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 4, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 5, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: '-30'", "step": 6, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 7, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 8, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 9, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 10, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 11, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 12, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 13, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 14, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 15, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 16, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 17, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 18, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 19, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 20, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 21, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 22, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 23, "task": "H49", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: '-30'", "step": 24, "task": "H49", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H50", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none", "step": 1, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 2, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 3, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 5, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 6, "task": "H50", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 7, "task": "H50", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 8, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H50", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 12, "task": "H50", "tool": "list"}
+{"condition": "llm-ver-none", "family": "C", "parse_error": "no TOOL line", "raw": "list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"} -> ['data0.txt', 'data1.txt', 'data2.txt']", "step": 13, "task": "H50"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 14, "task": "H50", "tool": "list"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 15, "task": "H50", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '130'", "step": 16, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '130'", "step": 17, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 18, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: observation = 130", "step": 19, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H50", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: none", "step": 21, "task": "H50", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 25, "task": "H50", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H51", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none\nTOOL: read path=data2.txt\nEXPECT: none", "step": 1, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H51", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 7, "task": "H51", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 8, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 9, "task": "H51", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: observation = '36'", "step": 10, "task": "H51", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 12, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 13, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 16, "task": "H51", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt']\nEXPECT: none", "step": 17, "task": "H51", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 18, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 19, "task": "H51", "tool": "read"}
+{"args": {"paths": "['data0.txt', 'data1.txt', 'data2.txt']"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"paths\": \"['data0.txt', 'data1.txt', 'data2.txt']\"}\nEXPECT: observation = '36'", "step": 20, "task": "H51", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 22, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-18'", "step": 23, "task": "H51", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H51", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H52", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H52", "tool": "read"}
+{"args": {"path": "y.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"y.txt\"}\nEXPECT: none", "step": 2, "task": "H52", "tool": "read"}
+{"args": {"a": "32", "b": "42"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: add a=32 b=42\nEXPECT: observation = 74", "step": 3, "task": "H52", "tool": "add"}
+{"args": {"a": "32", "b": "42"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: add {\"a\": \"32\", \"b\": \"42\"}\nEXPECT: none", "step": 4, "task": "H52", "tool": "add"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 5, "task": "H52", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 6, "task": "H52", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 7, "task": "H52", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 8, "task": "H52", "tool": "read"}
+{"args": {"path": "sum.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"sum.txt\"}\nEXPECT: none", "step": 9, "task": "H52", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt\", path=\"data1.txt\"\nEXPECT: none", "step": 0, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 1, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H53", "tool": "list"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt,data3.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt,data3.txt\"\nEXPECT: none", "step": 0, "task": "H54", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read path=data0.txt\nEXPECT: none", "step": 1, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 4, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 5, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 6, "task": "H54", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 7, "task": "H54", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 8, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 9, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 10, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 12, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H54", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 14, "task": "H54", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 15, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 16, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 17, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 19, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H54", "tool": "read"}
+{"args": {"paths": "['data0.txt',"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list paths=['data0.txt', 'data1.txt', 'data2.txt', 'data3.txt']\nEXPECT: none", "step": 21, "task": "H54", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 22, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 23, "task": "H54", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-192'", "step": 24, "task": "H54", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: observation = 55", "step": 1, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 2, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 3, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 4, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 5, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 6, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 7, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 8, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 9, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 10, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 11, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 12, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 13, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 14, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 15, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 16, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 17, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 18, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 19, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 20, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 21, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 22, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 23, "task": "H55", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 24, "task": "H55", "tool": "read"}
+{"args": {"path": "data1.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt\", path=\"data1.txt\"\nEXPECT: none", "step": 0, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 1, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H56", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list path=data0.txt data1.txt data2.txt data3.txt data4.txt\nEXPECT: none", "step": 0, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data1.txt\"}\nEXPECT: none\nTOOL: list {\"path\": \"data2.txt\"}\nEXPECT: none\n", "step": 1, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 2, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 3, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 4, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 5, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 6, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 7, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 10, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 11, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 12, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 14, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 16, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 17, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 18, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 20, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 22, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 23, "task": "H57", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "A", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 24, "task": "H57", "tool": "list"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 0, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 1, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read {\"path\": \"x.txt\"}\nEXPECT: none", "step": 2, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=x.txt\nEXPECT: none", "step": 3, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 4, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 5, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 6, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 7, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 8, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 9, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 10, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 11, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 12, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 13, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 14, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 15, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 16, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 17, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 18, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 19, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 20, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 21, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 22, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 23, "task": "H58", "tool": "read"}
+{"args": {"path": "x.txt"}, "condition": "llm-ver-none", "family": "B", "raw": "TOOL: read path=\"x.txt\"\nEXPECT: none", "step": 24, "task": "H58", "tool": "read"}
+{"args": {"path": "data0.txt,data1.txt,data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list path=\"data0.txt,data1.txt,data2.txt\"\nEXPECT: none", "step": 0, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read path=data0.txt\nEXPECT: none\nTOOL: read path=data1.txt\nEXPECT: none", "step": 1, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 2, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 3, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 4, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 5, "task": "H59", "tool": "read"}
+{"args": {"path": "data2.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\", \"path\": \"data1.txt\", \"path\": \"data2.txt\"}\nEXPECT: none", "step": 6, "task": "H59", "tool": "list"}
+{"args": {}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\", \"data1.txt\", \"data2.txt\"}\nEXPECT: none", "step": 7, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 8, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 9, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 10, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 11, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: observation = -91", "step": 12, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 13, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: observation = -91", "step": 14, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 15, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 16, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 17, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: observation = '91'", "step": 18, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 19, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: observation = -91", "step": 20, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: none", "step": 21, "task": "H59", "tool": "list"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 22, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: read {\"path\": \"data0.txt\"}\nEXPECT: '-91'", "step": 23, "task": "H59", "tool": "read"}
+{"args": {"path": "data0.txt"}, "condition": "llm-ver-none", "family": "C", "raw": "TOOL: list {\"path\": \"data0.txt\"}\nEXPECT: observation = '91'", "step": 24, "task": "H59", "tool": "list"}

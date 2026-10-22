@@ -13,7 +13,14 @@ This docstring describes the MECHANISM only.  The pinned model, GGUF
 sha256, runtime build, generation parameters (temperature, seed,
 max_tokens), task slice (rev12: HELD_OUT[:10]; rev13: HELD_OUT[:30]),
 row file prefix and harness limits live in the run's meta.json: rev12
--> rows_llm_meta.json; rev13 -> rows15_llm_meta.json.  Both runs were
+-> rows_llm_meta.json; rev13 -> rows15_llm_meta.json;
+rev16 (lever arms llm-ver-none / llm-ver-guard / llm-ver-none-guard
+vs control llm-ver, HELD_OUT[30:60]) -> rows16_llm_meta.json.  Task
+slice, condition list, row prefix are env-configurable
+(LLM_TASKS_START / LLM_TASKS_N / LLM_CONDITIONS / LLM_ROWS_PREFIX);
+defaults reproduce rev12.  The repeat-guard loop
+(_run_verified_guard) runs ONLY for *-guard conditions; the control
+condition runs run._run_verified byte-identical.  Both runs were
 pre-registered to parent BEFORE any numbers.
 
 Parent addition 2: EVERY raw model output is logged per step in the
@@ -61,7 +68,10 @@ world_mod.execute = _guarded_execute
 
 URL = os.environ.get('LLM_URL', 'http://127.0.0.1:8137')
 N_TASKS = int(os.environ.get('LLM_TASKS_N', '10'))
-TASKS = tasks_mod.HELD_OUT[:N_TASKS]
+TASKS_START = int(os.environ.get('LLM_TASKS_START', '0'))
+TASKS = tasks_mod.HELD_OUT[TASKS_START:TASKS_START + N_TASKS]
+CONDITIONS = os.environ.get(
+    'LLM_CONDITIONS', 'llm-base,llm-ver,llm-ver-noexp').split(',')
 SEED = int(os.environ.get('LLM_SEED', '0'))
 PREFIX = os.environ.get('LLM_ROWS_PREFIX', 'rows_llm')
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -95,8 +105,83 @@ def _patched_make_actor(t, s, verified=False):
     return a
 
 
+def _run_verified_guard(task, seed, actor):
+    """rev16 lever (ii): the repeat-guard.  run_verified_loop semantics
+    PLUS: a proposed call whose (tool, canonical args) was ALREADY
+    caught twice by the prediction contract in this task is blocked
+    PRE-execution (never executed, free under accepted-history
+    budgeting, consumes the per-step repair budget like any pre-gate
+    block, counted in `blocked` and separately in `guard_blocks`) with
+    a forced Violation('repeat_guard', ...) telling the actor to do
+    something different.  C0 semantics are untouched: llm-ver still
+    runs run._run_verified byte-identical; this variant runs only for
+    the *-guard conditions.  Catch keys are (tool, json-canonical
+    args); only CONTRACT catches (effect misses) count, never pre-gate
+    blocks."""
+    from instinct_models.stepverify import StepVerifier, StepRecord, Violation
+    state = {'files': dict(task['files'])}
+    verifier = StepVerifier(world_mod.TOOLS)
+
+    def execute(st, tool, args):
+        try:
+            return world_mod.execute(st, tool, args)
+        except world_mod.WorldError as e:
+            return 'ERROR: %s' % e, st
+
+    history = []
+    blocked = 0
+    guard_blocks = 0
+    effect_misses = 0
+    repairs = 0
+    violation = None
+    catch_counts = {}
+    exhausted = False
+    while len(history) < run_mod.MAX_STEPS:
+        step = actor(task, tuple(history), violation)
+        if step is None:
+            break
+        key = (step.tool, json.dumps(step.args, sort_keys=True))
+        v = verifier.verify_pre(step, state)
+        if v is None and catch_counts.get(key, 0) >= 2:
+            v = Violation('repeat_guard', step.tool,
+                          'repeated already-caught call: '
+                          'do something different')
+            guard_blocks += 1
+        if v is not None:
+            blocked += 1
+            repairs += 1
+            if repairs > run_mod.MAX_REPAIRS:
+                exhausted = True
+                break
+            violation = v
+            continue
+        before = state
+        observation, state = execute(state, step.tool, dict(step.args))
+        v = verifier.verify_post(step, before, observation, state)
+        history.append(StepRecord(step, observation, repairs, ()))
+        repairs = 0
+        violation = None
+        if v is not None:
+            effect_misses += 1
+            catch_counts[key] = catch_counts.get(key, 0) + 1
+            violation = v
+    finished_answer = None
+    for rec in history:
+        if rec.step.tool == 'finish':
+            finished_answer = rec.step.args.get('answer')
+    return dict(success=tasks_mod.grade(task, state, finished_answer),
+                steps=len(history), error_obs=0, blocked=blocked,
+                guard_blocks=guard_blocks,
+                effect_misses=effect_misses,
+                silent_fail=(finished_answer is not None
+                             and finished_answer != task['answer']),
+                finished=finished_answer is not None,
+                exhausted=exhausted or len(history) >= run_mod.MAX_STEPS)
+
+
+
 def run():
-    conditions = ['llm-base', 'llm-ver', 'llm-ver-noexp']
+    conditions = CONDITIONS
     rows = {c: [] for c in conditions}
     summary = {c: [] for c in conditions}
     done = _load_done()
@@ -112,10 +197,15 @@ def run():
                     actor_mod.make_actor = saved
                     actor = _LAST_ACTOR.pop()
                 else:
-                    actor = actor_llm.LLMActor(task, URL,
-                                               cond == 'llm-ver')
-                    res = run_mod._run_verified(
-                        task, SEED, actor_factory=lambda t, s: actor)
+                    want_expect = 'noexp' not in cond
+                    actor = actor_llm.LLMActor(
+                        task, URL, want_expect,
+                        expect_discipline='none' in cond)
+                    if 'guard' in cond:
+                        res = _run_verified_guard(task, SEED, actor)
+                    else:
+                        res = run_mod._run_verified(
+                            task, SEED, actor_factory=lambda t, s: actor)
                 key = '%s|%s' % (task['id'], cond)
                 if key in done:
                     continue

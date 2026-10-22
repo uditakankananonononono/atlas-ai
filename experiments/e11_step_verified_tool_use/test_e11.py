@@ -698,6 +698,67 @@ class TestLLMActorOffline(unittest.TestCase):
         self.assertEqual(miss, 182)
         self.assertEqual(block, 12)
 
+    def test_repeat_guard_blocks_third_identical_caught_call(self):
+        # rev16 lever (ii): after TWO contract catches on the same
+        # (tool, args), the next identical proposal is blocked
+        # pre-execution with a repeat_guard violation and never runs.
+        import llm_sweep
+        import tasks as tasks_mod
+        from actor_llm import compile_expect
+        from instinct_models.stepverify import Step
+        task = tasks_mod.DEV[0]
+
+        def actor(_t, _h, _v):
+            return Step('add', {'a': '1', 'b': '1'},
+                        expect=compile_expect('observation = 5'))
+        res = llm_sweep._run_verified_guard(task, 0, actor)
+        self.assertEqual(res['effect_misses'], 2)     # two real catches
+        self.assertEqual(res['guard_blocks'], 3)      # then only blocks
+        self.assertEqual(res['blocked'], 3)
+        self.assertEqual(res['steps'], 2)             # 2 accepted steps
+        self.assertTrue(res['exhausted'])             # repair cap hit
+        self.assertFalse(res['success'])
+
+    def test_repeat_guard_ignores_distinct_calls_and_pre_gate(self):
+        # distinct (tool, args) calls caught once each: guard never fires
+        import llm_sweep
+        import tasks as tasks_mod
+        from actor_llm import compile_expect
+        from instinct_models.stepverify import Step
+        task = tasks_mod.DEV[0]
+        calls = [Step('add', {'a': '1', 'b': '1'},
+                      expect=compile_expect('observation = 5')),
+                 Step('add', {'a': '2', 'b': '2'},
+                      expect=compile_expect('observation = 9')),
+                 Step('add', {'a': '3', 'b': '3'},
+                      expect=compile_expect('observation = 12')),
+                 None]
+        it = iter(calls)
+        res = llm_sweep._run_verified_guard(task, 0,
+                                            lambda _t, _h, _v: next(it))
+        self.assertEqual(res['effect_misses'], 3)
+        self.assertEqual(res['guard_blocks'], 0)
+        self.assertEqual(res['blocked'], 0)
+        self.assertEqual(res['steps'], 3)
+
+    def test_expect_discipline_prompt_line(self):
+        # rev16 lever (i): the discipline instruction appears only when
+        # both want_expect and expect_discipline are set
+        import actor_llm
+        import tasks as tasks_mod
+        task = tasks_mod.DEV[0]
+        a = actor_llm.LLMActor(task, 'http://unused', True,
+                               expect_discipline=True)
+        self.assertIn('Use EXPECT: none whenever you cannot predict',
+                      a._prompt((), None))
+        b = actor_llm.LLMActor(task, 'http://unused', True)
+        self.assertNotIn('Use EXPECT: none whenever you cannot predict',
+                         b._prompt((), None))
+        c = actor_llm.LLMActor(task, 'http://unused', False,
+                               expect_discipline=True)
+        self.assertNotIn('Use EXPECT: none whenever you cannot predict',
+                         c._prompt((), None))
+
     def test_compile_expect_observation(self):
         from actor_llm import compile_expect
         e = compile_expect('observation = 12')
@@ -767,3 +828,30 @@ class TestLLMActorOffline(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestRev16AnalysisOffline(unittest.TestCase):
+    """rev16: the lever-sweep analysis (deterministic replay of the
+    committed rows16_llm_*.jsonl) must reproduce the registered
+    per-arm totals exactly (run-recorded in rows16_llm_runlog.txt)."""
+
+    def test_rev16_analysis_reproduces_registered_totals(self):
+        # rev16b (A55): wasted is PER TASK and STRICT; the rev16 ship's
+        # flat-concatenation counted 13 cross-task adjacencies for C0
+        # and 13 for A2 (157/21 -> per-task 144/8, strict 113/7).
+        # rev16c (A59): the exhaustion counts are REPAIR-budget
+        # exhaustion only (steps below 25); the production
+        # `exhausted` flag also fires at the 25-step cap (true 30/30
+        # in every arm) and is NOT what is pinned here.
+        import analysis_rev16
+        out = analysis_rev16.compute()
+        self.assertEqual(
+            {k: (v['miss'], v['blocked'], v['pf'], v['wasted'],
+                 v['wasted_strict'], v['steps'], v['repair_exhausted'])
+             for k, v in out.items()
+                      if k not in ('per_task_misses',
+                                   'wasted_per_task')},
+            {'llm-ver': (181, 7, 1, 144, 113, 731, 1),
+             'llm-ver-none': (9, 13, 2, 5, 0, 691, 3),
+             'llm-ver-guard': (43, 49, 1, 8, 7, 467, 15),
+             'llm-ver-none-guard': (6, 16, 2, 2, 0, 681, 4)})

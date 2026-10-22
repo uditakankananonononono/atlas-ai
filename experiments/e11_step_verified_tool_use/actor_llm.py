@@ -114,10 +114,14 @@ class LLMActor:
     """Callable actor with the ScriptedActor.__call__ interface:
     act(task, history, violation) -> Step | None."""
 
-    def __init__(self, task, base_url, want_expect, model='qwen05'):
+    def __init__(self, task, base_url, want_expect, model='qwen05',
+                 expect_discipline=False):
         self.task = task
         self.base_url = base_url.rstrip('/')
         self.want_expect = want_expect
+        # rev16 lever (i): prompt-level EXPECT:none discipline for
+        # observations the model cannot predict exactly
+        self.expect_discipline = expect_discipline
         self.model = model
         self.parse_failures = 0
         self.raw_log = []        # every step: {raw, parsed|parse_error}
@@ -147,6 +151,8 @@ class LLMActor:
                             violation.detail))
             lines.append('Do not repeat that call. Correct it.')
             lines.append('')
+        if self.want_expect and self.expect_discipline:
+            lines.append('Use EXPECT: none whenever you cannot predict the observation exactly (for example list output or file contents you have not yet read).')
         lines.append('Now reply with EXACTLY one TOOL line' + (' and one EXPECT line' if self.want_expect else '') + '. Nothing else, no explanations:')
         return '\n'.join(lines)
 
