@@ -51,6 +51,87 @@ class LocalKnowledgePipeline:
         self.workspace=(self.root/tenant_id).resolve()
         if self.root not in self.workspace.parents: raise KnowledgeError('workspace escapes mounted boundary')
         self.workspace.mkdir(parents=True,exist_ok=True)
+        # Workspace pinning: the resolved workspace is opened ONCE at
+        # construction (O_NOFOLLOW|O_DIRECTORY) and every manifest write,
+        # ingest write and verified removal below is anchored to that held
+        # descriptor. Renaming or swapping the workspace pathname - or any
+        # ancestor of it - after construction cannot redirect bytes or
+        # deletions out of the tree verified at construction. Lifecycle:
+        # the caller owns the pipeline and must close() it: close() is
+        # idempotent and runs on __exit__. Legacy holders (service_factory
+        # keeps one pipeline per tenant for process lifetime; older tests)
+        # deliberately hold for process lifetime - the descriptor is one
+        # per pipeline, released at process exit. A __del__ finalizer was
+        # tried and REJECTED: its gc-timed close shifts the process fd
+        # count mid-test, breaking the pinned fd-accounting contract in
+        # test_m25_hz24_ownership_rollback (nondeterministic ordering).
+        # After close(),
+        # every method that uses the pinned descriptor REFUSES with a
+        # controlled KnowledgeError - it does NOT silently fall back to
+        # by-path operation. Only the module-level fs_safe by-path wrappers
+        # remain usable by path, and they keep their documented residual.
+        import os as _os
+        self._wsfd=_os.open(self.workspace,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+    def close(self):
+        fd=getattr(self,'_wsfd',None)
+        if fd is not None:
+            self._wsfd=None
+            import os as _os
+            try:_os.close(fd)
+            except OSError:pass
+    def __enter__(self): return self
+    def __exit__(self,*exc): self.close(); return False
+    def _require_open(self):
+        if self._wsfd is None: raise KnowledgeError('pipeline is closed')
+
+    def _contained_anchored(self,*parts:str,_check_final:bool=True)->str:
+        # Write/removal containment anchored to the construction-pinned
+        # workspace descriptor: dot segments are refused; every EXISTING
+        # component is lstat-ed under the held fd chain (a symlinked
+        # component refuses); a missing component ends the walk (a
+        # not-yet-created directory cannot be a symlink). Starting from the
+        # pinned directory and walking only non-symlink child components
+        # with no '..' structurally cannot escape the verified tree, however
+        # the workspace PATHNAME (or any ancestor) is renamed or swapped
+        # after construction. Returns the final component name. Reads keep
+        # the by-path _contained check plus their own O_NOFOLLOW hardening.
+        # INTERMEDIATE components are always walked. The FINAL component is
+        # lstat-ed too (a pre-existing symlink refuses with KnowledgeError,
+        # the base by-path contract) UNLESS _check_final=False, used by
+        # ingest for its version target: ingest's own existence lstat runs
+        # that check at the correct point in its flow (mid-flight dir
+        # replacement must fire THERE, not here - a helper-side final lstat
+        # consumed the rename seam and redirected bytes into a replacement
+        # dir). A final-component swap AFTER this check is refused by the
+        # downstream anchored op (O_NOFOLLOW open), same as base's
+        # documented TOCTOU residual.
+        import os as _os, stat as _stat
+        self._require_open()
+        # One-place name refusal for every caller (delete_verified takes a
+        # raw string; the registration schema pattern admits dot-only names):
+        # components must be single, non-empty, non-separator, non-dot names.
+        # This refuses absolute ids (leading separator), embedded separators,
+        # empty components and dot segments before any descriptor work.
+        for part in parts:
+            if part in ('','.','..') or _os.sep in part or (_os.altsep and _os.altsep in part):
+                raise KnowledgeError('source id components must be single non-dot names without separators')
+        fd=_os.dup(self._wsfd)
+        try:
+            for i,part in enumerate(parts[:-1]):
+                try: st=_os.lstat(part,dir_fd=fd)
+                except FileNotFoundError: break
+                if _stat.S_ISLNK(st.st_mode): raise KnowledgeError('symlinked path component inside workspace; refusing')
+                if i < len(parts)-2:
+                    nfd=_os.open(part,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY,dir_fd=fd)
+                    _os.close(fd); fd=nfd
+            if _check_final:
+                try: st=_os.lstat(parts[-1],dir_fd=fd)
+                except FileNotFoundError: st=None
+                if st is not None and _stat.S_ISLNK(st.st_mode):
+                    raise KnowledgeError('symlinked path component inside workspace; refusing')
+        finally:
+            _os.close(fd)
+        return parts[-1]
     def restore_verified(self,*,source_ids=None,same_adapters_attested=False):
         """Explicit startup restore. Deployment must attest original adapter identity.
 
@@ -214,7 +295,11 @@ class LocalKnowledgePipeline:
         # failure leaves a truthful registered record with no new version,
         # never a false version claim.
         rec=self.register(request.source)
-        target=self._contained(request.source.source_id,f'v{version.number}')
+        target_name=self._contained_anchored(request.source.source_id,f'v{version.number}',_check_final=False)
+        # target/tmp Paths below serve ONLY the ownership-checked cleanup
+        # (fstat(held dirfd) == lstat(path) on dev,ino) and name extraction;
+     # containment was already decided by the anchored check above.
+        target=self.workspace/request.source.source_id/target_name
         sid=request.source.source_id
         import os as _os
         if not sid or sid in ('.','..') or _os.sep in sid:
@@ -225,7 +310,7 @@ class LocalKnowledgePipeline:
             # than letting a separator resolve through extra components.
             raise KnowledgeError('source id is not a single path component')
         import uuid as _uuid
-        tmp_name=target.name+f'.tmp-{_uuid.uuid4().hex}'
+        tmp_name=target_name+f'.tmp-{_uuid.uuid4().hex}'
         tmp=target.with_name(tmp_name)
         dfd=None
         wfd=None
@@ -250,13 +335,15 @@ class LocalKnowledgePipeline:
                 # no symlink follow, no path re-resolution - ANY object at the
                 # target name refuses, including a dangling link that
                 # Path.exists() would report as absent.
-                root_fd=_os.open(self.workspace,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY)
+                self._require_open()  # controlled refusal after close(); never dup(None)
+                root_fd=_os.dup(self._wsfd)  # anchored to the construction-pinned workspace descriptor;
+                # a pathname/ancestor swap after construction cannot redirect ingest writes
                 try:
                     try: _os.mkdir(sid,dir_fd=root_fd)
                     except FileExistsError: pass
                     wfd=_os.open(sid,_os.O_RDONLY|_os.O_NOFOLLOW|_os.O_DIRECTORY,dir_fd=root_fd)
                 finally: _os.close(root_fd)
-                try: _os.lstat(target.name,dir_fd=wfd)
+                try: _os.lstat(target_name,dir_fd=wfd)
                 except FileNotFoundError: pass
                 else:
                     # In-memory versions are lost on restart while disk
@@ -460,15 +547,15 @@ class LocalKnowledgePipeline:
     def export(self)->dict:
         return {'tenant_id':self.tenant_id,'sources':[{**r.source.model_dump(mode='json'),'versions':[{'number':v.number,'hash':v.content_hash,'segments':[s.model_dump(mode='json') for s in v.segments]} for v in r.versions]} for r in self.records.values()],'provenance_edges':self.edges}
     def delete_verified(self,source_id:str)->dict:
-        path=self._contained(source_id)
+        name=self._contained_anchored(source_id)
         if source_id not in self.records:raise KeyError(source_id)
         # Removal is anchored to descriptors (no pathname re-walk after the
         # containment check) and verified by lstat of the name under the
         # workspace; symlinks/files at the name are left in place. Open races
         # (empty-dir swap before rmdir, components above the workspace) are
         # documented in fs_safe and carried.
-        from .fs_safe import remove_child_tree
-        verified=path.parent==self.workspace and remove_child_tree(self.workspace,path.name)
+        from .fs_safe import remove_child_tree_at_fd
+        verified=remove_child_tree_at_fd(self._wsfd,name)
         if verified:
             self.records.pop(source_id); self.chunks=[c for c in self.chunks if c.source_id!=source_id]; self.edges=[e for e in self.edges if e['from']!=source_id]
         # Truthful tracking: when the disk removal did not happen, memory
@@ -657,8 +744,7 @@ class LocalKnowledgePipeline:
         return row
 
     def _persist_manifest(self,rec:Record,dfd=None):
-        p=self._contained(rec.source.source_id)
-        if p.parent!=self.workspace: raise KnowledgeError('path escapes tenant workspace')
+        name=self._contained_anchored(rec.source.source_id)
         # O_EXCL|O_NOFOLLOW: never write through a preexisting link or file,
         # uuid or not; a collision fails instead of truncating anything.
         blob=json.dumps({'tenant_id':self.tenant_id,'source':rec.source.model_dump(mode='json'),'versions':[self._version_metadata(v) for v in rec.versions]},sort_keys=True).encode('utf-8')
@@ -689,8 +775,8 @@ class LocalKnowledgePipeline:
         # (real-dir-replacement split-state, pinned by
         # test_m25_manifest_anchoring). Registration (no held descriptor)
         # keeps the by-name route under the held workspace descriptor.
-        from .fs_safe import write_file_at_held_dir, write_file_in_child_dir
+        from .fs_safe import write_file_at_held_dir, write_file_in_child_dir_at_fd
         if dfd is not None:
             write_file_at_held_dir(dfd,'manifest.json',blob)
         else:
-            write_file_in_child_dir(self.workspace,p.name,'manifest.json',blob)
+            write_file_in_child_dir_at_fd(self._wsfd,name,'manifest.json',blob)

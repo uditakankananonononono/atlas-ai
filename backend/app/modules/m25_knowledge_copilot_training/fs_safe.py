@@ -44,12 +44,33 @@ def remove_child_tree(parent: Path, name: str) -> bool:
     Returns True only when the name is verifiably absent afterwards (also when
     it was already absent). A symlink, a regular file or any other non-directory
     at the name is left in place and returns False. Never raises OSError.
+    ``parent`` is opened BY PATH: components at or above it are not pinned
+    (use remove_child_tree_at_fd with a held descriptor to pin them).
     """
     if not name or name in (".", "..") or os.sep in name:
         return False
     try:
         pfd = os.open(parent, _FLAGS)
     except OSError:
+        return False
+    try:
+        return remove_child_tree_at_fd(pfd, name)
+    finally:
+        os.close(pfd)
+
+
+def remove_child_tree_at_fd(pfd: int, name: str) -> bool:
+    """Held-descriptor variant of remove_child_tree.
+
+    Same removal and truthfulness contract as remove_child_tree, but the
+    parent is pinned by the caller's open descriptor: renaming or swapping
+    the parent's pathname (or any ancestor) after the descriptor was opened
+    cannot redirect the removal into another tree. Never raises OSError.
+    Not closed: the final-name rmdir can still hit an EMPTY directory
+    swapped in after the identity check; crash/fsync durability is not
+    addressed.
+    """
+    if not name or name in (".", "..") or os.sep in name:
         return False
     try:
         try:
@@ -88,63 +109,77 @@ def remove_child_tree(parent: Path, name: str) -> bool:
         except OSError:
             return False
     finally:
-        os.close(pfd)
+        pass
 
 
 def write_file_in_child_dir(parent: Path, dirname: str, filename: str, blob: bytes) -> None:
     """Atomically replace ``dirname/filename`` under ``parent`` from ``blob``.
 
-    Everything is anchored to descriptors: ``parent`` and the child directory
-    are opened O_NOFOLLOW (the child is created via dir_fd when absent), the
-    temp file is created O_EXCL|O_NOFOLLOW inside the held child descriptor,
-    fsynced, renamed over ``filename`` with both ends on the held descriptor,
-    and the held directory is fsynced. A pathname swapped to a symlink or a
-    different directory after the caller's containment check cannot redirect
-    the write. On failure before the rename the temp file this call created is
+    By-path wrapper over write_file_in_child_dir_at_fd: everything under the
+    opened parent descriptor is anchored (child created via dir_fd when
+    absent, temp O_EXCL|O_NOFOLLOW inside the held child descriptor, fsync,
+    rename with both ends on the held descriptor, directory fsync). A
+    pathname swapped to a symlink or a different directory after the caller's
+    containment check cannot redirect the write BELOW the opened parent.
+    On failure before the rename the temp file this call created is
     unlinked; the previous ``filename`` is untouched. Raises OSError.
-    Not closed: components above ``parent`` are opened by path; durability
-    depends on the filesystem; a crash between steps can leave the temp file.
+    Not closed: components at or above ``parent`` are opened by path (use
+    write_file_in_child_dir_at_fd with a held descriptor to pin them);
+    durability depends on the filesystem; a crash between steps can leave
+    the temp file.
+    """
+    pfd = os.open(parent, _FLAGS)
+    try:
+        write_file_in_child_dir_at_fd(pfd, dirname, filename, blob)
+    finally:
+        os.close(pfd)
+
+
+def write_file_in_child_dir_at_fd(pfd: int, dirname: str, filename: str, blob: bytes) -> None:
+    """Held-descriptor variant of write_file_in_child_dir.
+
+    Same write contract, but the parent is pinned by the caller's open
+    descriptor: renaming or swapping the parent's pathname (or any
+    ancestor) after the descriptor was opened cannot redirect the write
+    into another tree. Raises OSError. Not closed: durability depends on
+    the filesystem; a crash between steps can leave the temp file.
     """
     import uuid
 
     for part in (dirname, filename):
         if not part or part in (".", "..") or os.sep in part:
             raise OSError("invalid path component")
-    pfd = os.open(parent, _FLAGS)
     try:
+        os.mkdir(dirname, dir_fd=pfd)
+    except FileExistsError:
+        pass
+    dfd = os.open(dirname, _FLAGS, dir_fd=pfd)
+    try:
+        tmp = f"{filename}.tmp-{uuid.uuid4().hex}"
+        fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=dfd)
+        renamed = False
         try:
-            os.mkdir(dirname, dir_fd=pfd)
-        except FileExistsError:
-            pass
-        dfd = os.open(dirname, _FLAGS, dir_fd=pfd)
-        try:
-            tmp = f"{filename}.tmp-{uuid.uuid4().hex}"
-            fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600, dir_fd=dfd)
-            renamed = False
             try:
-                try:
-                    view = memoryview(blob)
-                    while view:
-                        written = os.write(fd, view)
-                        if written <= 0:
-                            raise OSError("short write")
-                        view = view[written:]
-                    os.fsync(fd)
-                finally:
-                    os.close(fd)
-                os.replace(tmp, filename, src_dir_fd=dfd, dst_dir_fd=dfd)
-                renamed = True
+                view = memoryview(blob)
+                while view:
+                    written = os.write(fd, view)
+                    if written <= 0:
+                        raise OSError("short write")
+                    view = view[written:]
+                os.fsync(fd)
             finally:
-                if not renamed:
-                    try:
-                        os.unlink(tmp, dir_fd=dfd)
-                    except OSError:
-                        pass
-            os.fsync(dfd)
+                os.close(fd)
+            os.replace(tmp, filename, src_dir_fd=dfd, dst_dir_fd=dfd)
+            renamed = True
         finally:
-            os.close(dfd)
+            if not renamed:
+                try:
+                    os.unlink(tmp, dir_fd=dfd)
+                except OSError:
+                    pass
+        os.fsync(dfd)
     finally:
-        os.close(pfd)
+        os.close(dfd)
 
 
 def write_file_at_held_dir(dfd: int, filename: str, blob: bytes) -> None:
