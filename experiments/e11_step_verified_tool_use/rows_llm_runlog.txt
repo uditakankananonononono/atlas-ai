@@ -1,0 +1,35 @@
+H00 llm-base       A        success=False steps=25 blocked=0 misses=0 err_obs=12 parse_fail=0
+H00 llm-ver        A        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H00 llm-ver-noexp  A        success=False steps=2 blocked=3 misses=0 err_obs=0 parse_fail=0
+H01 llm-base       B        success=False steps=25 blocked=0 misses=0 err_obs=16 parse_fail=0
+H01 llm-ver        B        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H01 llm-ver-noexp  B        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+H02 llm-base       C        success=False steps=25 blocked=0 misses=0 err_obs=7 parse_fail=0
+H02 llm-ver        C        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H02 llm-ver-noexp  C        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+H03 llm-base       A        success=False steps=25 blocked=0 misses=0 err_obs=10 parse_fail=0
+H03 llm-ver        A        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H03 llm-ver-noexp  A        success=False steps=2 blocked=3 misses=0 err_obs=0 parse_fail=0
+H04 llm-base       B        success=False steps=25 blocked=0 misses=0 err_obs=17 parse_fail=0
+H04 llm-ver        B        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H04 llm-ver-noexp  B        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+H05 llm-base       C        success=False steps=25 blocked=0 misses=0 err_obs=5 parse_fail=0
+H05 llm-ver        C        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H05 llm-ver-noexp  C        success=False steps=5 blocked=4 misses=0 err_obs=0 parse_fail=0
+H06 llm-base       A        success=False steps=25 blocked=0 misses=0 err_obs=8 parse_fail=0
+H06 llm-ver        A        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H06 llm-ver-noexp  A        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+H07 llm-base       B        success=False steps=25 blocked=0 misses=0 err_obs=13 parse_fail=0
+H07 llm-ver        B        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H07 llm-ver-noexp  B        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+H08 llm-base       C        success=False steps=25 blocked=0 misses=0 err_obs=7 parse_fail=0
+H08 llm-ver        C        success=False steps=25 blocked=0 misses=0 err_obs=0 parse_fail=0
+H08 llm-ver-noexp  C        success=False steps=4 blocked=4 misses=0 err_obs=0 parse_fail=0
+H09 llm-base       A        success=False steps=25 blocked=0 misses=0 err_obs=11 parse_fail=0
+H09 llm-ver        A        success=False steps=7 blocked=3 misses=0 err_obs=0 parse_fail=3
+H09 llm-ver-noexp  A        success=False steps=3 blocked=3 misses=0 err_obs=0 parse_fail=0
+
+=== SUMMARY (per condition, n=10 tasks this session) ===
+llm-base: success 0/10 | blocked 0 | effect_misses 0 | error_obs 106 | silent_fail 0 | parse_failures 0
+llm-ver: success 0/10 | blocked 3 | effect_misses 0 | error_obs 0 | silent_fail 0 | parse_failures 3
+llm-ver-noexp: success 0/10 | blocked 32 | effect_misses 0 | error_obs 0 | silent_fail 0 | parse_failures 0

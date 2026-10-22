@@ -1,0 +1,17 @@
+{
+  "probe": "rev12 real-model validity probe",
+  "model": "Qwen2.5-0.5B-Instruct",
+  "gguf_file": "qwen2.5-0.5b-instruct-q4_k_m.gguf",
+  "gguf_sha256": "74a4da8c9fdbcd15bd1f6d01d621410d31c6fc00986f5eb687824e7b93d7a9db",
+  "gguf_source": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf",
+  "runtime": "llama.cpp llama-server, build b11796 (llama-b11796-bin-ubuntu-x64.tar.gz)",
+  "runtime_tarball_sha256": "70b856d40577f1cf66120f894b2674398175efbae7d9153566872c4b3c1b3d32",
+  "runtime_source": "https://github.com/ggml-org/llama.cpp/releases/tag/b11796",
+  "generation": {"temperature": 0.0, "seed": 20261021, "max_tokens": 48},
+  "server": {"ctx": 1024, "threads": 2, "port": 8137},
+  "tasks": "tasks.HELD_OUT[:10] (int held-out, families A/B/C; ids H00-H09)",
+  "seed": 0,
+  "conditions": ["llm-base", "llm-ver", "llm-ver-noexp"],
+  "harness_limits": "prompt shows last 6 history records; llm_sweep wraps world.execute to convert non-WorldError exceptions into WorldError (real-API 400 semantics), loops unchanged",
+  "run_at": "2026-10-21T22:32:00+05:30"
+}
