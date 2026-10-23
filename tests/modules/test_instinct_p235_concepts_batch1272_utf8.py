@@ -599,6 +599,33 @@ def test_registry_guard_registry_name_with_spec_found_is_reraised(mp):
     assert e.value is err and spied == [REG]
 
 
+def test_registry_guard_reraises_when_find_spec_returns_equality_liar(mp):
+    # EqLiar: __eq__/__ne__ lie about None (liar != None is False). The registry
+    # guard must decide by identity (`is not None`), not equality: with `!= None`
+    # the liar would send the guard down the fallback path and swallow the real
+    # ModuleNotFoundError. Pins the reraise-vs-fallback distinction.
+    real = builtins.__import__
+    err = ModuleNotFoundError('inner', name=REG)
+
+    class EqLiar:
+        def __eq__(self, other):
+            return other is None
+
+        def __ne__(self, other):
+            return other is not None
+
+    def hook(n, g=None, l=None, fromlist=(), level=0):
+        if n == REG:
+            raise err
+        return real(n, g, l, fromlist, level)
+    mp.setitem(sys.modules, REG, None)
+    mp.setattr(importlib.util, 'find_spec', lambda name: EqLiar())
+    mp.setattr(builtins, '__import__', hook)
+    with pytest.raises(ModuleNotFoundError) as e:
+        fresh()
+    assert e.value is err
+
+
 @pytest.mark.parametrize('nm', [REG, 'some.other.module'])
 def test_import_error_is_not_a_module_not_found_error(mp, nm):
     real = builtins.__import__
