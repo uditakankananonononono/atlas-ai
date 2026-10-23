@@ -3,12 +3,17 @@
 A single tenant row is the compare-and-swap transaction boundary. Snapshot,
 latest diff and bounded history commit together, or fail without a partial
 in-memory success. Ordering is commit order, not remote request start order.
+Lost compare-and-swap races are retried with bounded jittered backoff (64
+attempts, capped sleeps, worst case well under a second plus database work);
+permanent errors (validation, capacity) raise immediately without retry.
 No collector credentials/errors/configuration are stored. Query text and
 candidate display names ARE stored in the tenant database, not encrypted here.
 """
 from __future__ import annotations
 import copy
 import json
+import random
+import time
 from sqlalchemy import JSON, Integer, String, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Mapped, mapped_column
@@ -70,7 +75,8 @@ class QueryJournal:
         if kinds is not None and (type(kinds) is not list or any(
                 type(k) is not str or not k or len(k)>40 for k in kinds) or len(kinds)>32):
             raise ValueError('invalid query kinds')
-        for attempt in range(8):
+        for attempt in range(64):
+            contended=False
             with self.sessions() as db:
                 row=db.get(QueryJournalRow,self.tenant_id)
                 state=copy.deepcopy(row.state) if row else {'queries':{},'history':[]}
@@ -90,13 +96,16 @@ class QueryJournal:
                     db.add(QueryJournalRow(tenant_id=self.tenant_id,revision=1,state=state))
                     try:db.commit()
                     except IntegrityError:
-                        db.rollback();continue
+                        db.rollback();contended=True
                 else:
                     changed=db.execute(update(QueryJournalRow).where(
                         QueryJournalRow.tenant_id==self.tenant_id,
                         QueryJournalRow.revision==row.revision).values(revision=row.revision+1,state=state))
                     if changed.rowcount!=1:
-                        db.rollback();continue
-                    db.commit()
-                return copy.deepcopy(diff)
+                        db.rollback();contended=True
+                    else:
+                        db.commit()
+                if not contended:
+                    return copy.deepcopy(diff)
+            time.sleep(random.uniform(0,min(0.008,0.0005*(2**min(attempt,4)))))
         raise QueryJournalError('query journal concurrent update conflict')

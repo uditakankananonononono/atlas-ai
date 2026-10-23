@@ -62,3 +62,62 @@ class JournalTest(unittest.TestCase):
    self.assertEqual(restarted.history()[0]['query'],'q')
    self.assertEqual(restarted.diff('q'),{'first_run':True,'added':[],'removed':[]})
   finally:other.dispose()
+ def test_contention_losses_retried_with_bounded_backoff(self):
+  from app.modules.m22_tools_hub import query_journal as qj
+  self.store().record('seed',{},at='0')
+  uniform_calls=[]
+  class FakeRandom:
+   def uniform(self,a,b):uniform_calls.append((a,b));return 0.0
+  sleeps=[]
+  class FakeTime:
+   def sleep(self,x):sleeps.append(x)
+  old_r,old_t=qj.random,qj.time
+  qj.random,qj.time=FakeRandom(),FakeTime()
+  try:
+   wrapper=_LoseFirstUpdates(self.sessions(),9)
+   losing=QueryJournal('alice',session_factory=lambda:wrapper,db_engine=self.engine)
+   self.assertEqual(losing.record('q',{A:'Saved'},at='1'),{'first_run':True,'added':[],'removed':[]})
+  finally:qj.random,qj.time=old_r,old_t
+  self.assertEqual(uniform_calls,[(0,0.0005),(0,0.001),(0,0.002),(0,0.004)]+[(0,0.008)]*5)
+  self.assertEqual(len(sleeps),9)
+  self.assertEqual(len(self.store().history()),2)
+ def test_contention_budget_exhaustion_still_raises(self):
+  from app.modules.m22_tools_hub import query_journal as qj
+  self.store().record('seed',{},at='0')
+  wrapper=_LoseFirstUpdates(self.sessions(),10**9)
+  class FakeTime:
+   def sleep(self,x):pass
+  old_t=qj.time;qj.time=FakeTime()
+  try:
+   losing=QueryJournal('alice',session_factory=lambda:wrapper,db_engine=self.engine)
+   with self.assertRaises(QueryJournalError) as ctx:losing.record('q',{},at='1')
+  finally:qj.time=old_t
+  self.assertEqual(str(ctx.exception),'query journal concurrent update conflict')
+  self.assertEqual(wrapper.executes,64)
+ def test_permanent_errors_raise_without_retry(self):
+  from app.modules.m22_tools_hub import query_journal as qj
+  s=self.store()
+  for i in range(200):s.record(str(i),{},at='now')
+  wrapper=_LoseFirstUpdates(self.sessions(),10**9)
+  class FakeTime:
+   def sleep(self,x):raise AssertionError('permanent errors must not be retried')
+  old_t=qj.time;qj.time=FakeTime()
+  try:
+   losing=QueryJournal('alice',session_factory=lambda:wrapper,db_engine=self.engine)
+   with self.assertRaises(QueryJournalError) as ctx:losing.record('overflow',{},at='now')
+  finally:qj.time=old_t
+  self.assertEqual(str(ctx.exception),'query journal capacity exceeded')
+  self.assertEqual(wrapper.executes,0)
+
+class _LoseFirstUpdates:
+ def __init__(self,real,losses):self._r=real;self._left=losses;self.executes=0
+ def __enter__(self):return self
+ def __exit__(self,*a):return self._r.__exit__(*a)
+ def __getattr__(self,k):return getattr(self._r,k)
+ def execute(self,*a,**k):
+  self.executes+=1
+  if self._left>0:
+   self._left-=1
+   class _R:rowcount=0
+   return _R()
+  return self._r.execute(*a,**k)

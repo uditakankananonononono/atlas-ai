@@ -1,5 +1,5 @@
 """Actual Service integration; requires real application dependencies, no shims."""
-import asyncio,tempfile,unittest
+import asyncio,tempfile,threading,unittest
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -28,6 +28,16 @@ class ServiceJournalTest(unittest.IsolatedAsyncioTestCase):
   await second.discover('search',kinds=['blog'])
   self.assertEqual(second.discovery_report('search')['diff'],{'first_run':False,'added':['New'],'removed':['Old']})
   self.assertEqual(Service(None,[],query_journal=self.store('bob')).query_history,[])
+ async def test_journal_record_runs_off_the_event_loop(self):
+  store=self.store()
+  seen=[]
+  real=store.record
+  def spy(*args,**kw):seen.append(threading.get_ident());return real(*args,**kw)
+  store.record=spy
+  service=Service(None,[Collector([{'name':'A','url':'https://example.org/a'}])],query_journal=store)
+  await service.discover('search',kinds=['blog'])
+  self.assertEqual(len(seen),1)
+  self.assertNotEqual(seen[0],threading.get_ident())
  async def test_failed_commit_does_not_expose_new_candidates_or_success(self):
   store=self.store()
   def fail(*args,**kw):raise QueryJournalError('injected commit refusal')

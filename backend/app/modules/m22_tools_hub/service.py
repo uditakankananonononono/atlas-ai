@@ -6,6 +6,7 @@ from datetime import datetime,timezone
 from typing import Any,AsyncIterator,Protocol
 from urllib.parse import parse_qsl,urlencode,urlparse,urlunparse
 from app.core.models import ApprovalRequest
+from starlette.concurrency import run_in_threadpool
 MODULE_ID=22
 
 def now():return datetime.now(timezone.utc)
@@ -100,7 +101,9 @@ class Service:
         at=now_dt().isoformat()
         if self.query_journal is not None:
             # Commit completed snapshot and history before exposing success.
-            self.last_diffs[query]=self.query_journal.record(query,snapshot,at=at,kinds=kinds)
+            # Off-loop: record() retries contention with bounded sleeps;
+            # keep its blocking out of the ASGI event loop.
+            self.last_diffs[query]=await run_in_threadpool(self.query_journal.record,query,snapshot,at=at,kinds=kinds)
         else:
             previous=self._query_snapshots.get(query)
             self.last_diffs[query]={"first_run":previous is None,"added":[name for k,name in snapshot.items() if previous is not None and k not in previous],"removed":[name for k,name in (previous or {}).items() if k not in snapshot]}
