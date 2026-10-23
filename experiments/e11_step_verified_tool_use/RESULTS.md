@@ -105,8 +105,10 @@ prior art (StepTool) before any novelty claim - none is made here.
 
 ## rev16: two-lever sweep on the fresh slice H30-H59 - levers cut wasted catches 94-99% (per task), success still 0/30
 
-VERDICT (pre-registered endpoints, prereg commit 91c32ddd pinned
-before any run, parent-acked 2026-10-22 05:03 with additions): the
+VERDICT (pre-registered endpoints; prereg text pinned before any run
+as a lane-local commit (hash 91c32ddd; per this lane's account it
+was never pushed and was lost in the 2026-10-22 wipe - not fetchable); parent ack 2026-10-22 05:03 IST with
+additions, transcript record): the
 SUCCESS BAR IS NOT MET - A3 did not beat C0 success (0/30 vs 0/30; C0
 finished zero tasks, so the success comparison is vacuous exactly as
 the prereg pre-declared).  The FALSIFIER DOES NOT FIRE - its
@@ -118,7 +120,8 @@ but at Qwen2.5-1.5B nothing converts into task finishes; the rev13
 capability-floor finding on the contract arm replicates on H30-H59.
 
 Naming: pre-registered under the name "rev15"; renamed rev16 after
-the wipe-recovery ship took rev15 (parent 12:26 ack).
+the wipe-recovery ship took rev15 (parent 12:26 IST ack, transcript
+record).
 
 Setup (pins identical to rev13): Qwen2.5-1.5B-Instruct Q4_K_M (GGUF
 sha256 6a1a2eb6...), llama.cpp b11796, temp 0, seed 20261021,
@@ -133,9 +136,11 @@ llm-ver-guard (repeat-guard: a call whose (tool, canonical args) was
 already caught twice by the contract is blocked pre-execution, free,
 repair-budget consuming, forced Violation('repeat_guard')), A3
 llm-ver-none-guard (combined).  Pilot disclosure: two smoke pilots
-(05:05-05:19 and 12:20-12:34, 2 tasks x 4 conditions each) validated
+(self-reported windows 05:05-05:19 and 12:20-12:34, 2 tasks x 4
+conditions each) validated
 mechanics; their rows were CLEARED before the full sweep and are part
-of no number.  Sweep window 12:34-14:22 IST (120 runs).
+of no number.  Sweep window 12:34-14:22 IST self-reported (120 runs; the runlog
+carries no per-run timestamps).
 
 RESULTS (n=30 per condition; success/blocked/parse_failures
 RUN-RECORDED in rows16_llm_runlog.txt; misses/blocked/parse_failures/
@@ -220,7 +225,8 @@ totals.
 
 ## rev15: wipe recovery - cumulative patch rebuilt on RERUN data (changed numbers table)
 
-What happened: on 2026-10-22 ~09:05 IST both this lane's workspace and
+What happened (this lane's account; auditor wipe states per parent
+messages at the time): on 2026-10-22 ~09:05 IST both this lane's workspace and
 the parent's /downloads were wiped, destroying every local copy of the
 shipped e11 patches (rev0..rev14 cumulative a3dfd401... and earlier)
 and all rev12/rev13 probe rows.  No auditor retained a copy
@@ -287,7 +293,8 @@ is the delta against the wiped rev14 ship (patch sha256 a3dfd401...,
 tree 0708eb80... - those artifacts are unrecoverable and are preserved
 here only as hashes).
 
-Naming note: the two-lever sweep pre-registered at 05:03 under the
+Naming note: the two-lever sweep pre-registered at 05:03 IST
+(transcript record) under the
 name "rev15" is unaffected by this ship and will ship under its own
 revision number (pending parent renumbering); this rev15 is the wipe
 recovery ship only.
@@ -349,8 +356,10 @@ Findings (POST-HOC):
    contract for a model that cannot know generated filenames (the
    scripted actor used EXPECT: none for readback-type calls).
 
-Consequences (parent direction 2026-10-22 05:00): the follow-on
-sweep (announced as 'rev15' in the 05:03 prereg, to be renumbered -
+Consequences (parent direction 2026-10-22 05:00 IST, transcript
+record): the follow-on
+sweep (announced as 'rev15' in the 05:03 IST prereg, transcript record,
+to be renumbered -
 see the rev15 wipe-recovery section above) pre-registers two levers as separate arms plus the combined arm - (i) EXPECT:none
 discipline for unpredictable observations, (ii) a repeat-guard
 (identical call caught twice -> forced 'do something different'

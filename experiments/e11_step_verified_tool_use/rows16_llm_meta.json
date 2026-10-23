@@ -1,5 +1,5 @@
 {
-  "probe": "rev16 two-lever sweep (pre-registered, prereg commit 91c32ddd pinned before any run; parent-acked 2026-10-22 05:03 with additions)",
+  "probe": "rev16 two-lever sweep (pre-registered; prereg text pinned before any run as a lane-local never-pushed commit, hash 91c32ddd, per this lane's account never pushed and lost in the 2026-10-22 wipe - not fetchable; parent ack 2026-10-22 05:03 IST with additions, transcript record)",
   "model": "Qwen2.5-1.5B-Instruct",
   "gguf_file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
   "gguf_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
@@ -16,6 +16,6 @@
   "checkpointing": "rows appended per run; rows16_llm_done.txt manifests completed task|condition pairs for resume",
   "harness_limits": "prompt shows last 6 history records; llm_sweep wraps world.execute to convert non-WorldError exceptions into WorldError (real-API 400 semantics), loops unchanged",
   "preregistered": "question: can two levers convert rev13's contract catches into progress on tasks the 1.5B model could not finish; endpoints success / wasted catches / blocked / parse failures; success bar: A3 beats C0 success paired at n=30 AND guard arms strictly lower total wasted catches vs C0; falsifier: no lever arm beats C0 success AND neither guard arm lowers wasted catches; if C0 finishes 0 tasks the success comparison is vacuous and the paired wasted-catch comparison carries the falsifier alone",
-  "pilot_disclosure": "two smoke pilots (05:05-05:19 2-task x 4-condition; 12:20-12:34 2-task x 4-condition after the rev15b rebuild) validated mechanics; their rows were CLEARED before the full sweep and are part of no number (pilot logs preserved at /home/sandbox/llm/rows16-pilot.log)",
-  "run_window": "full sweep launched 2026-10-22 12:34 IST, completed 14:22 IST (120 runs; wall time includes sandbox suspensions)"
+  "pilot_disclosure": "two smoke pilots (self-reported windows 05:05-05:19 2-task x 4-condition; 12:20-12:34 2-task x 4-condition after the rev15b rebuild) validated mechanics; their rows were CLEARED before the full sweep and are part of no number (pilot logs preserved at /home/sandbox/llm/rows16-pilot.log)",
+  "run_window": "full sweep launched 2026-10-22 12:34 IST, completed 14:22 IST, self-reported (120 runs; the runlog carries no per-run timestamps; wall time includes sandbox suspensions)"
 }

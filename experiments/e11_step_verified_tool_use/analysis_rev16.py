@@ -2,7 +2,7 @@
 committed rows16_llm_*.jsonl and assert them against the run-recorded
 SUMMARY (rows16_llm_runlog.txt).
 
-Pre-registered endpoints (prereg commit 91c32ddd, parent-acked 05:03):
+Pre-registered endpoints (prereg pinned lane-local pre-run; hash 91c32ddd, per this lane's account lost in the 2026-10-22 wipe and not fetchable; parent ack 05:03 IST, transcript record):
 success, wasted catches (catches that are immediate repetitions of an
 already-caught identical call), blocked, parse failures.
 
