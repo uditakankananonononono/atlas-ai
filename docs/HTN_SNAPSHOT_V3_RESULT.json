@@ -1,0 +1,30 @@
+{
+  "scope": "Review-only portable base HTNPlanner method snapshot engineering",
+  "base_commit": "41b16d98ef87919f46df6e3e73b9cf7d56b27a32",
+  "tested_at": "2026-10-26T20:49:40+05:30",
+  "python": "3.10.12",
+  "pytest": "8.3.5",
+  "pydantic": "2.10.6",
+  "pydantic_core": "2.27.2",
+  "passed": 54,
+  "failed": 0,
+  "warnings": 2,
+  "pytest_duration_seconds": 0.23,
+  "exit_code": 0,
+  "source_sha256": {
+    "backend/app/modules/m20_general_cognitive_worker/htn_planner.py": "d46e4a1121ff4b314f4f51afce4789b0014c375ee16cc3861bd51685fd0cd560",
+    "backend/app/modules/m20_general_cognitive_worker/schemas.py": "c9314e603c780a56d6d7c458a13aff25ef079720d76e128beb81b032ed893c03",
+    "backend/app/modules/m20_general_cognitive_worker/embeddings.py": "f5ce4081434f94f4f6ccc2c2bd60208174298cc9007c5b78880139041ae3cacc",
+    "tests/modules/test_m20_method_snapshot.py": "e25a1f4734b6d4bac837391603f6ddbd41b0f15a649906d2115a9f23d253173e"
+  },
+  "verification": "One isolated source-trio run, no full app bootstrap; source hashes checked before and after. Synthetic fixtures only. Plugin autoload and bytecode disabled. Wall timeout60s, CPU30s, address-space512MiB, per-file output cap5MiB.",
+  "warning_detail": "Built-in pytest cache attempted writes under /dev because config was /dev/null. Both writes were permission-denied. Future isolated commands should disable cacheprovider. No rerun was used to hide warnings.",
+  "limits": [
+    "No main merge, deployment, full integration, Python3.12, AGI, or research-performance claim.",
+    "Import supports exact base HTNPlanner only; durable subclasses are rejected.",
+    "Subclass export omits review status. Proposed durable methods could be transferred to an ungated base planner, so this is not production review-safe portability.",
+    "Runtime snapshots remain private data; goal text and arguments are not publication-safe merely because authority fields are cleared.",
+    "Counters and scope labels are data claims, not authenticated history or execution permission.",
+    "No universal nested-input resource or semantic-correctness guarantee."
+  ]
+}
