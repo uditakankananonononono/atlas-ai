@@ -25,6 +25,10 @@ class PlannerModel(Protocol):
 
 VALID_RISKS = {r.value for r in Risk}
 
+METHOD_SNAPSHOT_KIND = "htn-method-snapshot"
+METHOD_SNAPSHOT_VERSION = 1
+METHOD_SNAPSHOT_MAX_METHODS = 1024
+
 
 class PlanError(Exception):
     pass
@@ -43,6 +47,175 @@ class HTNPlanner:
         method = self._validated_method(method)
         self._methods[method.name] = method
         return method.model_copy(deep=True)
+
+    def export_methods(self) -> dict[str, Any]:
+        """Serialize every registered method into a JSON-safe snapshot.
+
+        The snapshot preserves names, goal patterns, subtask templates,
+        provenance (source, generated_goal, generated_context_sha256) and
+        historical counters, deep-copied so later mutation of either side
+        cannot alias the other. Authority and execution residue is NOT
+        transported: activation_review and proposer_actor_id export as
+        null and every subtask exports in a pristine pending state, so a
+        snapshot cannot carry approvals, claimed terminal states or
+        outputs anywhere.
+
+        A snapshot is still PRIVATE runtime data: goal text, arguments
+        and context hashes may be sensitive. It is not sanitized for
+        publication. Review status (active/proposed) is a store-local
+        property and is never exported; a snapshot carries method data
+        only, and importing it confers no review activation or authority.
+        """
+        return {
+            "kind": METHOD_SNAPSHOT_KIND,
+            "version": METHOD_SNAPSHOT_VERSION,
+            "methods": [
+                self._strip_method_authority(method.model_copy(deep=True)).model_dump(mode="json")
+                for method in self._methods.values()
+            ],
+        }
+
+    def import_methods(self, snapshot: dict[str, Any]) -> list[str]:
+        """Merge a snapshot produced by export_methods into the store.
+
+        Supported scope: the base in-process HTNPlanner store only.
+        Durable subclasses mirror mutations into a repository behind a
+        review gate; importing there must go through a durable-aware path
+        with repository atomicity, which is not defined here, so this
+        method refuses to run on any subclass rather than silently bypass
+        those hooks.
+
+        All-or-nothing: every entry is validated and staged before the
+        store changes, so a malformed snapshot leaves the store untouched.
+        Names must not collide with existing methods or with each other.
+
+        Contract: entries must carry exactly the HTNMethod fields and each
+        subtask exactly the PlanNode fields - no defaults are synthesized
+        for missing data and no unknown keys are accepted. Raw JSON values
+        are checked before pydantic coercion, so coercible-but-invalid
+        values (true for an integer, 1.0 for the version, negative or
+        fractional counters, a rate inconsistent with its counters) are
+        rejected. Learned methods must retain their scope binding
+        (nonempty generated_goal and a lowercase hex sha256
+        generated_context_sha256); unscoped learned methods are refused
+        rather than imported as never-matching dead weight.
+
+        Trust boundary: a snapshot is portable data, never authority.
+        Import clears activation_review and proposer_actor_id and resets
+        every subtask's execution fields, so loaded knowledge cannot
+        restore execution permissions, approvals, or claimed terminal
+        states. Historical counters (outcomes_recorded,
+        successes_recorded, times_used) are preserved as claims made by
+        the exporting process; they are not verified on import, are not
+        fresh evidence of learned success, and do not influence matching
+        (_match_method is lexical plus scope binding, not rate-based).
+        """
+        if type(self) is not HTNPlanner:
+            raise PlanError(
+                "import_methods supports the base HTNPlanner store only; "
+                "durable subclasses must route imports through their "
+                "repository write-through and review gate, which this "
+                "method would otherwise bypass"
+            )
+        staged = self._validated_snapshot(snapshot)
+        self._methods.update(staged)
+        return list(staged)
+
+    @staticmethod
+    def _strip_method_authority(method: HTNMethod) -> HTNMethod:
+        """Clear authority and execution residue: provenance is not authorization."""
+        method.activation_review = None
+        method.proposer_actor_id = None
+        for node in method.subtasks:
+            node.state = TaskState.PENDING
+            node.attempts = 0
+            node.approval_id = None
+            node.result_summary = ""
+            node.output = None
+            node.outcome_unknown = False
+        return method
+
+    def _validated_snapshot(self, snapshot: dict[str, Any]) -> dict[str, HTNMethod]:
+        if not isinstance(snapshot, dict):
+            raise PlanError("method snapshot must be an object")
+        unknown_keys = set(snapshot) - {"kind", "version", "methods"}
+        if unknown_keys:
+            raise PlanError(f"method snapshot carries unknown fields: {sorted(unknown_keys)!r}")
+        if snapshot.get("kind") != METHOD_SNAPSHOT_KIND:
+            raise PlanError(f"method snapshot kind must be {METHOD_SNAPSHOT_KIND!r}")
+        version = snapshot.get("version")
+        if type(version) is not int or version != METHOD_SNAPSHOT_VERSION:
+            raise PlanError(f"unsupported method snapshot version {version!r}")
+        entries = snapshot.get("methods")
+        if not isinstance(entries, list):
+            raise PlanError("method snapshot methods must be a list")
+        if len(entries) > METHOD_SNAPSHOT_MAX_METHODS:
+            raise PlanError(f"method snapshot exceeds {METHOD_SNAPSHOT_MAX_METHODS} methods")
+        method_fields = set(HTNMethod.model_fields)
+        node_fields = set(PlanNode.model_fields)
+        staged: dict[str, HTNMethod] = {}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise PlanError(f"method snapshot entry must be an object: {entry!r}")
+            if set(entry) != method_fields:
+                raise PlanError(
+                    "method snapshot entry fields must be exactly the HTNMethod fields "
+                    f"(missing {sorted(method_fields - set(entry))!r}, "
+                    f"unexpected {sorted(set(entry) - method_fields)!r})"
+                )
+            self._check_snapshot_scalars(entry)
+            subtasks = entry["subtasks"]
+            if not isinstance(subtasks, list):
+                raise PlanError("snapshot subtasks must be a list")
+            for raw_node in subtasks:
+                if not isinstance(raw_node, dict) or set(raw_node) != node_fields:
+                    raise PlanError("snapshot subtask fields must be exactly the PlanNode fields")
+            # Raw DAG and type rules run on the uncoerced JSON before
+            # pydantic so coercion cannot launder invalid values.
+            self._validate(subtasks)
+            try:
+                method = HTNMethod.model_validate(entry)
+            except Exception as exc:
+                raise PlanError(f"invalid method snapshot entry: {exc}") from exc
+            if method.name in staged or method.name in self._methods:
+                raise PlanError(f"method snapshot name collides with an existing method: {method.name!r}")
+            method = self._validated_method(method)
+            staged[method.name] = self._strip_method_authority(method)
+        return staged
+
+    @staticmethod
+    def _check_snapshot_scalars(entry: dict[str, Any]) -> None:
+        """Raw pre-coercion checks on counter, rate and scope-binding fields."""
+        if type(entry["name"]) is not str or not entry["name"].strip():
+            raise PlanError("snapshot method name must be nonempty text")
+        if type(entry["goal_pattern"]) is not str or not entry["goal_pattern"].strip():
+            raise PlanError("snapshot goal_pattern must be nonempty text")
+        if entry["source"] not in (MethodSource.LIBRARY.value, MethodSource.LEARNED.value):
+            raise PlanError(f"snapshot source must be one of {[s.value for s in MethodSource]!r}")
+        for counter in ("times_used", "outcomes_recorded", "successes_recorded"):
+            if type(entry[counter]) is not int or entry[counter] < 0:
+                raise PlanError(f"snapshot {counter} must be a nonnegative integer")
+        if entry["successes_recorded"] > entry["outcomes_recorded"]:
+            raise PlanError("snapshot successes exceed outcomes")
+        rate = entry["success_rate"]
+        if type(rate) not in (int, float) or not 0 <= rate <= 1:
+            raise PlanError("snapshot success_rate must be a finite number in [0,1]")
+        if entry["outcomes_recorded"]:
+            if rate != entry["successes_recorded"] / entry["outcomes_recorded"]:
+                raise PlanError("snapshot success_rate is inconsistent with its counters")
+        elif rate != 0:
+            raise PlanError("snapshot success_rate must be 0 when no outcomes are recorded")
+        if entry["source"] == MethodSource.LEARNED.value:
+            goal = entry["generated_goal"]
+            if type(goal) is not str or not goal:
+                raise PlanError("learned snapshot method requires its generated_goal scope binding")
+            digest = entry["generated_context_sha256"]
+            if (
+                type(digest) is not str
+                or len(digest) != 64
+                or any(ch not in "0123456789abcdef" for ch in digest)
+            ):
+                raise PlanError("learned snapshot method requires a lowercase hex sha256 generated_context_sha256")
 
     def _validated_method(self, method: HTNMethod) -> HTNMethod:
         method = method.model_copy(deep=True)
